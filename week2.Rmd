@@ -1,0 +1,45 @@
+---
+title: "COVID-19 Cases in Tokyo"
+author: "Nobu Asai"
+date: "10/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+options(warn=-1)
+options(scipen=100)
+```
+  
+<br>  
+  
+The Tokyo metropolitan government publishes daily updates on COVID-19 in Tokyo<sup>[1]</sup>. This paper is to use the data from the Tokyo novel coronavirus infectious disease task force daily report<sup>[2]</sup> issued on October 29th, 2020.  The report includes the total number of infected persons and the total number of recovered/dead persons by areas in Tokyo as of October 28th.  From these data, we can easily calculate the active number of infected persons in each area in Tokyo, and plot on the map by using R and leaflet as follows.  
+
+Remark:   
+* This paper is for an assignment in the week 2 of 'Developing Data Products' class in the Coursera.    
+* Position of makers are the location of ward offices, not individual locations. 
+  
+  
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(readr)
+tokyo1028 <- as.data.frame(read_csv("tokyo1028e.csv"))
+colnames(tokyo1028) <- c("pop", "total", "leave", "active", "lat", "lng")
+tokyo_covid19 = tokyo1028[rep(seq_len(nrow(tokyo1028)), tokyo1028[,c(4)]),]
+```
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+library(leaflet)
+# Set the center of the map to the Tokyo Metropolitan Government at 35.7015977,139.6741809,
+leaflet(tokyo_covid19) %>% 
+    addTiles() %>% 
+    setView(lng=139.674, lat=35.70, zoom=10) %>% 
+    addCircleMarkers(lng=~lng, lat=~lat, popup=~pop, label=~pop, clusterOptions = markerClusterOptions())
+```
+  
+  
+##### References
+
+[1] https://stopcovid19.metro.tokyo.lg.jp/en   
+[2] https://www.bousai.metro.tokyo.lg.jp/_res/projects/default_project/_page_/001/012/135/20201029.pdf (Japanese)
+
