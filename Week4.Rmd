@@ -47,9 +47,11 @@ colnames(g7) <- c('date','cases','death','country','population')
 </font>
 ```{r duration, echo=TRUE, eval=FALSE, warning=FALSE, message=FALSE}
         # set start/end days based on input$range from ui.R
-        day_d1 <- input$range[1]
-        day_d2 <- input$range[2]
-        g7_stage <- subset(g7, ((date >= day_d1) & (date <= day_d2)))
+        g7_stage <- reactive({
+            day_d1 <- input$range[1]
+            day_d2 <- input$range[2]
+            return(subset(g7, ((date >= day_d1) & (date <= day_d2))))
+        })
 ```
 <font size="4">  
 2) get the name of countries to be displayed, and create a subset   

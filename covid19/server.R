@@ -25,21 +25,20 @@ text_death <- 'death'
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-
-    output$distPlot <- renderPlot({
-
-        # set start/end days based on input$range from ui.R
+    
+    # set start/end days based on input$range from ui.R 
+    g7_stage <- reactive({
         day_d1 <- input$range[1]
         day_d2 <- input$range[2]
+        return(subset(g7, ((date >= day_d1) & (date <= day_d2))))
+    })
+    
+    output$distPlot <- renderPlot({
         
-        g7_stage <- subset(g7, ((date >= day_d1) & (date <= day_d2)))
-        
-        # create a subset based on input$countries from ui.R
-
         if (length(input$countries) > 0) {
-            
             # select countries based on input$countries
             for (i in input$countries) {
+                g7_stage <- g7_stage()
                 g7_country <- subset(g7_stage, country == i)
                 if (exists("g7_summary") == FALSE) {
                     g7_summary <- g7_country
@@ -47,12 +46,11 @@ shinyServer(function(input, output) {
                     g7_summary <- rbind(g7_summary, g7_country)
                 }
             }
-
             # select either "cases" or "death" based on input$type
             if (input$type == 'cases') {
-                g <- ggplot(g7_summary, aes(x=date, y=cases, color=country))
+                g <- ggplot(data = g7_summary, aes(x=date, y=cases, color=country))
             } else {
-                g <- ggplot(g7_summary, aes(x=date, y=death, color=country))
+                g <- ggplot(data = g7_summary, aes(x=date, y=death, color=country))
             }
             g <- g + geom_point()
             g <- g + geom_smooth(se=FALSE, method='gam')

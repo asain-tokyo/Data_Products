@@ -3151,9 +3151,11 @@ colnames(g7) &lt;- c(&#39;date&#39;,&#39;cases&#39;,&#39;death&#39;,&#39;country
 <p><font size="4">There are thee tasks in server.R to update a screen based on selected items.<br/><br> 1) get updated duration (start/end), and create a subset of data to fit to the selected duration<br/></font></p>
 
 <pre class = 'prettyprint lang-r'>        # set start/end days based on input$range from ui.R
-        day_d1 &lt;- input$range[1]
-        day_d2 &lt;- input$range[2]
-        g7_stage &lt;- subset(g7, ((date &gt;= day_d1) &amp; (date &lt;= day_d2)))</pre>
+        g7_stage &lt;- reactive({
+            day_d1 &lt;- input$range[1]
+            day_d2 &lt;- input$range[2]
+            return(subset(g7, ((date &gt;= day_d1) &amp; (date &lt;= day_d2))))
+        })</pre>
 
 <p><font size="4"><br/>2) get the name of countries to be displayed, and create a subset<br/></font></p>
 
